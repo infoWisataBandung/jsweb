@@ -44,8 +44,6 @@ function submitWisata() {
   const rating = document.getElementById("rating").value;
   //const errorMessage = document.getElementById("error-message");
 
-  
-
   // Buat objek data JSON
   const data = {
     "nama": nama,
@@ -60,7 +58,7 @@ function submitWisata() {
     "rating": parseFloat(rating)
   };
 
-  // Kirim data melalui API menggunakan metode yang sesuai (misalnya, fetch)
+  // Kirim data melalui API menggunakan metode post
   fetch("https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/function-6CreateWisata", {
     method: "POST",
     headers: {

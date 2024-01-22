@@ -14,7 +14,3 @@ const fetchData = async () => {
         return null;
     }
 };
-
-
-
-

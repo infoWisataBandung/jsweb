@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const passwordInput = document.getElementById("password");
     const submitButton = document.getElementById("submit");
     const errorMessage = document.getElementById("error-message");
-        const loadingSpinner = document.getElementById("loadingSpinner");
+    const loadingSpinner = document.getElementById("loadingSpinner");
 
         loginForm.addEventListener("submit", function(event) {
             event.preventDefault();
@@ -41,7 +41,9 @@ document.addEventListener("DOMContentLoaded", function() {
         const password = passwordInput.value;
 
         // Kirim permintaan POST ke API login user
-        fetch("https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/SIgnin-1Signin", {
+        //https://us-central1-bustling-walker-340203.cloudfunctions.net/function-5SignFix
+        //https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/SIgnin-1Signin
+        fetch("https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/LoginNew", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

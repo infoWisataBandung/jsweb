@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Fungsi untuk mendapatkan data dari API MongoDB
+    //https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/function-7ReadWisata
     const fetchData = async () => {
         try {
-            const response = await fetch('https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/function-7ReadWisata');
+            const response = await fetch('https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/Function-3ReadWisata');
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -89,7 +90,8 @@ document.addEventListener('DOMContentLoaded', function () {
         deleteConfirmButton.onclick = () => {
         // Panggil API untuk menghapus data berdasarkan nama
         // Ganti URL dengan URL API delete yang sesuai
-        const apiUrl = `https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/function-9DeleteWisata`;
+        //https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/function-9DeleteWisata
+        const apiUrl = `https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/Function-5DeleteWisata`;
 
         fetch(apiUrl, {
             method: 'DELETE',
