@@ -11,11 +11,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     loginForm.addEventListener("submit", function(event) {
         event.preventDefault();
-        loadingSpinner.classList.add("active"); // Display loading spinner during login
+        loadingSpinner.classList.add("active"); // Tampilkan animasi loading saat tombol login ditekan
 
         const username = usernameInput.value;
         const password = passwordInput.value;
 
+        // Kirim permintaan POST ke API login user
         fetch("https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/LoginNew", {
             method: "POST",
             headers: {
@@ -28,28 +29,35 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => response.json())
         .then(data => {
-            loadingSpinner.classList.remove("active"); // Hide loading spinner after login attempt
+            loadingSpinner.classList.remove("active"); // Sembunyikan animasi loading setelah proses login selesai
 
             if (data.status === true) {
+                // Pengolahan respons setelah login berhasil untuk user biasa
                 const token = data.token;
                 setCookieWithExpireHour("token", token, 2);
-                window.location.href = "../pages/autentikasi.html"; // Redirect on successful login
+                window.location.href = "../pages/autentikasi.html";
             } else {
-                errorMessage.textContent = "User not found";
+                // Pesan kesalahan jika login gagal
+                errorMessage.textContent = "User not found"; // Pesan kesalahan
             }
         })
         .catch(error => {
             console.error("Error:", error);
-            loadingSpinner.classList.remove("active"); // Hide loading spinner on error
         });
     });
 
+    // Fungsi untuk mengecek apakah form telah diisi dengan benar
     const validation = () => {
         const username = usernameInput.value;
         const pass = passwordInput.value;
-        submitButton.disabled = !(username !== "" && pass !== "");
+        if (username !== "" && pass !== "") {
+            submitButton.disabled = false;
+        } else {
+            submitButton.disabled = true;
+        }
     };
 
+    // Panggil fungsi validation saat input berubah 
     usernameInput.addEventListener("input", validation);
     passwordInput.addEventListener("input", validation);
 });

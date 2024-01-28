@@ -1,64 +1,41 @@
-//https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/OtorisasiFIx
-// document.addEventListener("DOMContentLoaded", function () {
-//     const tokenTextArea = document.getElementById("tokenTextArea");
-//     const submitButton = document.getElementById("submit");
-//     const errorMessage = document.getElementById("error-message");
-//     const authForm = document.getElementById("authForm");
+const authForm = document.getElementById("authForm");
+const tokenTextArea = document.getElementById("tokenTextArea");
+const submitButton = document.getElementById("submit");
+const errorMessage = document.getElementById("error-message");
 
-//     submitButton.addEventListener("click", function () {
-//         const token = tokenTextArea.value;
+authForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-//         // Kirim permintaan POST ke API validasi token
-//         fetch("https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/OtorisasiFIx", {
-//             method: "GET",
-//             headers: {
-//                 "Content-Type": "application/json"
-//             },
-//             body: JSON.stringify({
-//                 token: token
-//             })
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.status === true) {
-//                 // Jika token cocok, redirect ke halaman card.html
-//                 window.location.href = "../pages/card.html";
-//             } else {
-//                 // Jika token tidak cocok, tampilkan pesan kesalahan
-//                 errorMessage.textContent = "Token salah";
-//             }
-//         })
-//         .catch(error => {
-//             console.error("Error:", error);
-//         });
-//     });
-// });
+    const token = tokenTextArea.value;
 
-document.addEventListener("DOMContentLoaded", function () {
-    const authForm = document.getElementById("authForm");
-    const tokenTextArea = document.getElementById("tokenTextArea");
-    const errorMessage = document.getElementById("error-message");
+    try {
+        const response = await fetch("https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/OtorisasiFIx", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token // Menggunakan token sebagai apiKey
+            }
+        });
 
-    authForm.addEventListener("submit", function (event) {
-        event.preventDefault(); // Menghentikan event default form
+        const data = await response.json();
 
-        const token = tokenTextArea.value;
-
-        // Kirim permintaan GET ke API validasi token
-        fetch(`https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/OtorisasiFIx?token=${token}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === true) {
-                    // Jika token cocok, redirect ke halaman card.html
+        if (response.ok) {
+            if (data.status === true) {
+                const role = data.data.role;
+                if (role === "admin") {
+                    window.location.href = "../pages/admindashboard.html";
+                } else if (role === "user") {
                     window.location.href = "../pages/card.html";
                 } else {
-                    // Jika token tidak cocok, tampilkan pesan kesalahan
-                    errorMessage.textContent = "Token salah";
+                    errorMessage.textContent = "Role tidak valid";
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
-    });
+            } else {
+                errorMessage.textContent = data.message;
+            }
+        } else {
+            errorMessage.textContent = "Terjadi kesalahan dalam permintaan";
+        }
+    } catch (error) {
+        console.error("Terjadi kesalahan:", error);
+    }
 });
-
