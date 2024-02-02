@@ -18,7 +18,7 @@ function getCoordinates() {
     // Encode the inputName to make it suitable for a URL
     var encodedName = encodeURIComponent(inputName);
 
-    // Call the geocoding API
+    
     fetch(`https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/function-10GeocodingAPI?name=${encodedName}`)
         .then(response => {
             if (!response.ok) {
@@ -35,7 +35,7 @@ function getCoordinates() {
                 document.getElementById("latitude").textContent = coordinates.latitude;
                 document.getElementById("longitude").textContent = coordinates.longitude;
 
-                // Show section 2
+                
                 showSection();
             } else {
                 console.error('Error: Data is undefined or in unexpected format');
@@ -77,7 +77,7 @@ function searchLocation() {
     var latitude = document.getElementById("inputLatitude").value;
     var longitude = document.getElementById("inputLongitude").value;
 
-    // Call the reverse geocoding API
+    
     fetch(`https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/function-10ReverseGeocodingAPI?latitude=${latitude}&longitude=${longitude}`)
         .then(response => response.json())
         .then(data => {

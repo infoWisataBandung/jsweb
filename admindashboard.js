@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
   
-  // Fungsi untuk menutup modal konfirmasi penghapusan
+  // Fungsi menutup modal konfirmasi penghapusan
   const closeDeleteConfirmationModal = () => {
     document.getElementById('deleteConfirmationModal').classList.remove('is-active');
   };
 
-  // Fungsi untuk mendapatkan nilai cookie berdasarkan nama
+  // Fungsi dapatkan nilai cookie berdasarkan nama
   const getCookie = (name) => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const fetchData = async () => {
       try {
-        const token = getCookie('token'); // Mendapatkan token dari cookie
+        const token = getCookie('token'); // dapatkan token dari cookie
         const response = await fetch('https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/Function-3ReadWisata', {
             headers: {
-              'Authorization': `Bearer ${token}`, // Menambahkan header Authorization dengan token
+              'Authorization': `Bearer ${token}`, // tambahkan header Authorization dengan token
             },
         });
 
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         const jsonData = await response.json();
 
-        // Check if the response is an array
+        // cek respon
         if (Array.isArray(jsonData)) {
           return { data: jsonData }; // Wrap the array in an object with a 'data' property
         } else {
@@ -39,11 +39,11 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     };
   
-        // Fungsi untuk mengisi tabel dengan data
+        
         const fillTable = (data) => {
           const tableBody = document.getElementById('table-body');
   
-          // Bersihkan isi tabel sebelum mengisi data baru   
+            
           tableBody.innerHTML = '';
   
           // Cek apakah data ada di dalam property "data"
@@ -53,12 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
               const row = 
               `
                   <tr>
-                      <td class="is-checkbox-cell">
-                          <label class="b-checkbox checkbox">
-                              <input type="checkbox" value="false">
-                              <span class="check"></span>
-                          </label>
-                      </td>
+                      
                       <td data-label="Judul">${item.nama}</td>
                       <td data-label="Jenis">${item.jenis}</td>
                       <td data-label="Alamat">${item.alamat}</td>
@@ -79,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
               tableBody.innerHTML += row;
           });
   
-          // Set up event listeners for delete buttons
+          
           const deleteButtons = document.querySelectorAll('.delete-post');
           deleteButtons.forEach(button => {
               button.addEventListener('click', () => {
@@ -89,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
           });
   
-          // Set up event listeners for edit buttons
+          
           const editButtons = document.querySelectorAll('.button.is-warning');
           editButtons.forEach(button => {
           button.addEventListener('click', () => {
@@ -112,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function () {
   
       deleteConfirmButton.onclick = async () => {
         const token = getCookie('token'); // Mendapatkan token dari cookie
-        // Panggil API untuk menghapus data berdasarkan nama
         const apiUrl = `https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/Function-5DeleteWisata`;
   
         try {
@@ -120,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`, // Menambahkan header Authorization dengan token
+              'token': token, // Menambahkan header Authorization dengan token
             },
             body: JSON.stringify({
               filter: {
@@ -136,14 +130,14 @@ document.addEventListener('DOMContentLoaded', function () {
           const data = await response.json();
           console.log(data);
   
-          // Lakukan sesuatu setelah berhasil menghapus, misalnya refresh tabel
+          
           fetchData().then((data) => fillTable(data));
         } catch (error) {
           console.error('Error deleting data:', error);
-          // Tampilkan pesan kesalahan ke pengguna
+          
           alert('Error deleting data. Please try again.');
         } finally {
-          // Tutup modal konfirmasi penghapusan, baik berhasil maupun gagal
+          
           closeDeleteConfirmationModal();
         }
       };
@@ -152,12 +146,11 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('deleteConfirmationModal').classList.add('is-active');
     };
   
-    // Set up event listeners for edit buttons
+    
     const editButtons = document.querySelectorAll('.edit-post');
     editButtons.forEach(button => {
     button.addEventListener('click', () => {
         const postName = button.getAttribute('data-post-name');
-        // Redirect to the edit form with the postName parameter
         window.location.href = `formedit.html?postName=${postName}`;
       });
     });

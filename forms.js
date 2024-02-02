@@ -2,12 +2,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const submitBtn = document.getElementById('submitBtn');
     const resetBtn = document.getElementById('resetBtn');
 
-    // Add an event listener to the submit button
     submitBtn.addEventListener('click', function () {
         submitForm();
     });
 
-    // Add an event listener to the reset button
     resetBtn.addEventListener('click', function () {
         resetForm();
     });
@@ -40,9 +38,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const categorySelect = document.getElementById('categorySelect');
         const namaInput = document.getElementById('nama');
         const kontenTextarea = document.getElementById('konten');
+        const longitudeInput = document.getElementById('longitude');
+        const latitudeInput = document.getElementById('latitude');
         const alamatInput = document.getElementById('alamat');
         const gambarInput = document.getElementById('gambar');
         const ratingInput = document.getElementById('rating');
+        
 
         // Get token from cookies
         const token = getCookie('token');
@@ -52,11 +53,22 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        // Validate latitude and longitude
+        if (isNaN(parseFloat(latitudeInput.value)) || isNaN(parseFloat(longitudeInput.value))) {
+            alert('Latitude and Longitude must be valid numbers.');
+            return;
+        }
+
         // Prepare the data object to be sent
         const formData = new FormData();
-        formData.append('jenis', categorySelect.value);
         formData.append('nama', namaInput.value);
+        formData.append('jenis', categorySelect.value);
+        //formData.append('nama', namaInput.value);
         formData.append('deskripsi', kontenTextarea.value);
+        // formData.append('longitude', longitudeInput.value);
+        formData.append('lokasi.latitude', parseFloat(latitudeInput.value));
+        //formData.append('latitude', latitudeInput.value);
+        formData.append('lokasi.longitude', parseFloat(longitudeInput.value));
         formData.append('alamat', alamatInput.value);
         formData.append('gambar', gambarInput.files[0]);
         formData.append('rating', parseFloat(ratingInput.value));
@@ -72,9 +84,15 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             // Handle the response from the server
-            console.log('Success:', data);
-            showNotification("Data has been successfully submitted", "success");
-            // You can handle success accordingly, for example, display a success message or redirect the user
+            // console.log('Success:', data);
+            // showNotification("Data has been successfully submitted", "success");
+            // Handle the response from the server
+            console.log('Response:', data);
+            if (data.status) {
+                showNotification("Data has been successfully submitted", "success");
+            } else {
+                showNotification("Failed to submit data. " + data.message, "danger");
+            }
         })
         .catch(error => {
             console.error('Error:', error);
@@ -82,18 +100,36 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Function to reset the form
     function resetForm() {
-        document.getElementById("wisataForm").reset();
+        //document.getElementById("wisataForm").reset();
+        const form = document.getElementById("wisataForm");
+        form.reset();
+
+       
+        const fileInput = document.querySelector('#file-js-example input[type=file]');
+        const fileName = document.querySelector('#file-js-example .file-name');
+        fileInput.value = ''; // Clear the file input value
+        fileName.textContent = 'No file uploaded'; // Reset the display text
     }
 
-    // Function to validate the form data
     function validateForm() {
-        // For simplicity, this example assumes that all fields are required
+        
         const namaInput = document.getElementById('nama');
+
+        const latitudeInput = document.getElementById('latitude');
+        const longitudeInput = document.getElementById('longitude');
 
         if (namaInput.value.trim() === '') {
             alert('Title is required.');
+            return false;
+        }
+
+        // Validate latitude and longitude
+        const latitude = parseFloat(latitudeInput.value);
+        const longitude = parseFloat(longitudeInput.value);
+
+        if (isNaN(latitude) || isNaN(longitude)) {
+            alert('Please enter valid latitude and longitude values.');
             return false;
         }
 

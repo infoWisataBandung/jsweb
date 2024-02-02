@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const username = usernameInput.value;
         const password = passwordInput.value;
 
-        // Kirim permintaan POST ke API login user
+
         fetch("https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/LoginNew", {
             method: "POST",
             headers: {
@@ -29,15 +29,14 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => response.json())
         .then(data => {
-            loadingSpinner.classList.remove("active"); // Sembunyikan animasi loading setelah proses login selesai
+            loadingSpinner.classList.remove("active");
 
             if (data.status === true) {
-                // Pengolahan respons setelah login berhasil untuk user biasa
                 const token = data.token;
                 setCookieWithExpireHour("token", token, 2);
                 window.location.href = "../pages/autentikasi.html";
             } else {
-                // Pesan kesalahan jika login gagal
+                
                 errorMessage.textContent = "User not found"; // Pesan kesalahan
             }
         })
@@ -46,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Fungsi untuk mengecek apakah form telah diisi dengan benar
     const validation = () => {
         const username = usernameInput.value;
         const pass = passwordInput.value;

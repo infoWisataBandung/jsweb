@@ -1,48 +1,58 @@
+function getParameterByName(name) {
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(window.location.href);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    // const urlParams = new URLSearchParams(window.location.search);
-    // const postName = urlParams.get('postName');
     const postName = getParameterByName('postName');
 
-    // Mengambil data berdasarkan postName
-    // You need to implement this fetch function based on your API
-    // const fetchDataForEdit = async (postName) => {
+    const fileInput = document.querySelector('#file-js-example input[type=file]');
+    fileInput.onchange = () => {
+        if (fileInput.files.length > 0) {
+            const fileName = document.querySelector('#file-js-example .file-name');
+            fileName.textContent = fileInput.files[0].name;
+        }
+    };
+
+    // Fetch data for the selected post and populate the form fields
     const fetchDataForEdit = async () => {
         try {
-            const response = await fetch(`https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/function-7ReadWisata?nama=${postName}`);
-            //const data = await response.json();
+            const response = await fetch(`https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/Function-3ReadWisata?nama=${postName}`);
+
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
+
             const data = await response.json();
             return data;
-            
-            // Temukan data yang sesuai dengan postName
-            // const postData = data.data.find(item => item.nama === postName);
-            // return postData;
         } catch (error) {
-            console.error('Errorr fetching data for edit:', error);
-            //baru
+            console.error('Error fetching data for edit:', error);
             return null;
         }
     };
 
-    // Fungsi untuk mengisi formulir dengan data
+    // Populate the form fields with the fetched data
     const populateFormForEdit = async () => {
-        const data = await fetchDataForEdit(postName);
+        const data = await fetchDataForEdit();
 
-        // Mengisi bidang formulir dengan data
         if (data && data.data) {
             document.getElementById('nama').value = data.nama;
             document.getElementById('konten').value = data.deskripsi;
             document.getElementById('alamat').value = data.alamat;
+            document.getElementById('latitude').value = data.lokasi.latitude;
+            document.getElementById('longitude').value = data.lokasi.longitude;
 
-            // Menangani input file secara terpisah
+            // Handle file input separately
             const fileInput = document.getElementById('gambar');
             fileInput.parentNode.querySelector('.file-name').innerText = data.gambar;
 
             document.getElementById('rating').value = data.rating;
 
-            // Tetapkan kategori yang dipilih di menu dropdown
+            // Set selected category in the dropdown menu
             const categorySelect = document.getElementById('categorySelect');
             const selectedCategory = data.jenis;
             for (let i = 0; i < categorySelect.options.length; i++) {
@@ -56,84 +66,76 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    // Mengambil data dan mengisi formulir saat memuat halaman
+    // Get data and populate the form when the page loads
     populateFormForEdit();
 
-    // Set up event listener for Done button
+    
     const submitBtn = document.getElementById('editBtn');
     submitBtn.addEventListener('click', async () => {
-        // Tangani pengisian formulir di sini
         const updatedData = {
             filter: { nama: postName },
             update: {
                 $set: {
                     jenis: document.getElementById('categorySelect').value,
                     deskripsi: document.getElementById('konten').value,
-                    //nama: document.getElementById('nama').value,
                     alamat: document.getElementById('alamat').value,
-                    gambar: document.getElementById('gambar').value,
+                    'lokasi.latitude': parseFloat(document.getElementById('latitude').value),
+                    'lokasi.longitude': parseFloat(document.getElementById('longitude').value),
+                    gambar: document.getElementById('gambar').files[0], // Use files[0] for file input
                     rating: document.getElementById('rating').value,
-                    // ... other fields
                 },
             },
-            //nama: document.getElementById('nama').value,
-            // deskripsi: document.getElementById('konten').value,
-            // alamat: document.getElementById('alamat').value,
-            // gambar: document.getElementById('gambar').value,
-            // rating: document.getElementById('rating').value,
-            // jenis: document.getElementById('categorySelect').value,
-        }; //const updatedData = {
+        };
 
-        // Tangani panggilan API update di sini
-        //await updateDataFunction(updatedData);
-
-        // Alihkan ke dasbord setelah pembaruan berhasil
-        //window.location.href = 'admindashboard.html';
         try {
-            await updateDataFunction(updatedData);
+            const token = getCookie('token');
 
-            // Fetch and fill the table after successful update
-            //fetchData().then((data) => fillTable(data));
-            // Redirect to dashboard after successful update
-            window.location.href = 'admindashboard.html';
+            const response = await fetch('https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/UpdateWisata', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                body: JSON.stringify(updatedData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result && result.message === "Data updated successfully") {
+                console.log('Update result:', result);
+                showNotification("Data has been successfully updated", "success");
+                window.location.href = 'admindashboard.html';
+            } else {
+                throw new Error('Unexpected response format');
+            }
         } catch (error) {
-            console.error('Errorr updating data:', error);
-            // Show an alert or handle the error accordingly
+            console.error('Error updating data:', error);
+            showNotification("Failed to update data. Please try again.", "danger");
         }
-    });    
-
-});
-      
-// Add this function to handle the API call for updating data
-const updateDataFunction = async (data) => {
-    try {
-        const response = await fetch('https://asia-southeast2-bustling-walker-340203.cloudfunctions.net/function-8UpdateWisata', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        //console.log('Update result:', result);
-
-        // Check if the expected result structure is present
-        if (result && result.message === "Data updated successfully") {
-            console.log('Update result:', result);
-        } else {
-            throw new Error('Unexpected response format');
-        }
-    } catch (error) {
-        console.error('Errorr updating data:', error);
-        throw error; // Re-throw the error for the calling function to catch
-    }
-    
-    fetchDataForEdit(postName).then(data => {
-        populateFormForEdit(data);
     });
-};
+
+    
+    function showNotification(message, type) {
+        const notificationContainer = document.getElementById("notification-container");
+        const notification = document.createElement("div");
+        notification.className = `notification is-${type}`;
+        notification.textContent = message;
+
+        notificationContainer.appendChild(notification);
+
+        setTimeout(() => {
+            notificationContainer.removeChild(notification);
+        }, 3000);
+    }
+
+    // Function to get cookie value by name
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+});
